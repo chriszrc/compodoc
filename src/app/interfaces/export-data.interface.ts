@@ -11,4 +11,6 @@ export interface ExportData {
     coverage?: any;
     miscellaneous?: any;
     components?: any;
+    //TODO wtf why no controllers here?
+    controllers?: any;
 }

@@ -52,6 +52,7 @@ export class ExportJsonEngine {
         exportData.components = data.components;
         exportData.modules = this.processModules();
         exportData.miscellaneous = data.miscellaneous;
+        exportData.controllers = data.controllers;
         if (!Configuration.mainData.disableRoutesGraph) {
             exportData.routes = data.routes;
         }
@@ -70,6 +71,9 @@ export class ExportJsonEngine {
 
     public processModules() {
         const modules: AngularNgModuleNode[] = DependenciesEngine.getModules();
+
+        console.log('original modules');
+        console.dir(modules, { depth: null });
 
         let _resultedModules = [];
 
@@ -146,6 +150,9 @@ export class ExportJsonEngine {
 
             _resultedModules.push(moduleElement);
         }
+
+        console.log('Modules processed');
+        // console.dir(_resultedModules, { depth: null });
 
         return _resultedModules;
     }

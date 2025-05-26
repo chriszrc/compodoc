@@ -13,9 +13,11 @@ export class ModuleHelper {
         props: ReadonlyArray<ts.ObjectLiteralElementLike>,
         srcFile: ts.SourceFile
     ): Array<IParseDeepIdentifierResult> {
-        return this.symbolHelper
+        const moduleProviders = this.symbolHelper
             .getSymbolDeps(props, 'providers', srcFile)
             .map(providerName => this.symbolHelper.parseDeepIndentifier(providerName, srcFile));
+        console.log('moduleProviders', moduleProviders);
+        return moduleProviders;
     }
 
     public getModuleControllers(

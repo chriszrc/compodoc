@@ -78,16 +78,36 @@ export class ClassHelper {
     }
 
     private formatDecorators(decorators) {
+        // console.log('decorators length', decorators.length);
+        // console.log(decorators[0]);
+        // console.log(decorators[1]);
+
         let _decorators = [];
 
         _.forEach(decorators, (decorator: any) => {
             if (decorator.expression) {
+                // console.log('decorator.expression', decorator.expression);
                 if (decorator.expression.text) {
+                    // console.log('decorator.expression.text', decorator.expression.text);
                     _decorators.push({ name: decorator.expression.text });
                 }
                 if (decorator.expression.expression) {
-                    let info: any = { name: decorator.expression.expression.text };
+                    // console.log(
+                    //     'decorator.expression.expression.text',
+                    //     decorator.expression.expression.text
+                    // );
+                    let info: any = {
+                        name:
+                            decorator.expression.expression?.text ||
+                            decorator.expression.expression?.expression?.escapedText +
+                                '.' +
+                                decorator.expression.expression?.name?.escapedText
+                    };
                     if (decorator.expression.arguments) {
+                        // console.log(
+                        //     'decorator.expression.arguments',
+                        //     decorator.expression.arguments
+                        // );
                         info.stringifiedArguments = this.stringifyArguments(
                             decorator.expression.arguments
                         );
@@ -97,6 +117,7 @@ export class ClassHelper {
             }
         });
 
+        // console.log('_decorators', _decorators);
         return _decorators;
     }
 
@@ -516,6 +537,7 @@ export class ClassHelper {
         let extendsElements = [];
 
         if (typeof ts.getEffectiveImplementsTypeNodes !== 'undefined') {
+            console.log('ts.getEffectiveImplementsTypeNodes');
             let implementedTypes = ts.getEffectiveImplementsTypeNodes(classDeclaration);
             if (implementedTypes) {
                 let i = 0;
@@ -529,6 +551,7 @@ export class ClassHelper {
         }
 
         if (typeof ts.getClassExtendsHeritageElement !== 'undefined') {
+            console.log('ts.getClassExtendsHeritageElement');
             if (astFile) {
                 let interfaceOrClassNode = astFile.getInterface(className);
                 if (!interfaceOrClassNode) {
@@ -536,6 +559,7 @@ export class ClassHelper {
                 }
                 if (interfaceOrClassNode) {
                     const extendsListRaw = interfaceOrClassNode.getExtends();
+                    console.log('extendsListRaw', extendsListRaw);
                     let extendsList = [];
                     if (extendsListRaw) {
                         if (Array.isArray(extendsListRaw)) {
@@ -552,8 +576,10 @@ export class ClassHelper {
                             }
                         } else {
                             const extendElementExpression = extendsListRaw.getExpression();
+                            console.log('extendElementExpression', extendElementExpression);
                             if (extendElementExpression) {
                                 const text = extendElementExpression.getText();
+                                console.log('text', text);
                                 if (text) {
                                     extendsList.push(text);
                                 }
@@ -564,13 +590,15 @@ export class ClassHelper {
                 }
             }
         }
+
         members = this.visitMembers(classDeclaration.members, sourceFile);
 
         if (nodeHasDecorator(classDeclaration)) {
+            console.log('nodeHasDecorator classDeclaration');
             const classDecorators = getNodeDecorators(classDeclaration);
             // Loop and search for official decorators at top-level :
             // Angular : @NgModule, @Component, @Directive, @Injectable, @Pipe
-            // Nestjs : @Controller, @Module, @Injectable
+            // Nestjs : @Controller, @Module, @Injectable, @Resolver, make generic
             // Stencil : @Component
             let isDirective = false;
             let isService = false;
@@ -656,6 +684,7 @@ export class ClassHelper {
                     }
                 ];
             } else {
+                console.log('resolver return else', extendsElements);
                 return [
                     {
                         deprecated,
@@ -675,6 +704,7 @@ export class ClassHelper {
                 ];
             }
         } else if (description) {
+            console.log('resolver return description', extendsElements);
             return [
                 {
                     deprecated,
@@ -697,6 +727,7 @@ export class ClassHelper {
                 }
             ];
         } else {
+            console.log('resolver return', extendsElements);
             return [
                 {
                     deprecated,
@@ -742,6 +773,7 @@ export class ClassHelper {
         for (let i = 0; i < members.length; i++) {
             // Allows typescript guess type when using ts.is*
             let member = members[i];
+            // console.log('member root loop', member.symbol.escapedName);
 
             inputDecorator = this.getDecoratorOfType(member, 'Input');
             outputDecorator = this.getDecoratorOfType(member, 'Output');
@@ -790,6 +822,7 @@ export class ClassHelper {
                             !(this.isProtected(member) && Configuration.mainData.disableProtected)
                         ) {
                             if (ts.isMethodDeclaration(member) || ts.isMethodSignature(member)) {
+                                // console.log('push member', member);
                                 methods.push(this.visitMethodDeclaration(member, sourceFile));
                             } else if (
                                 ts.isPropertyDeclaration(member) ||
@@ -1228,6 +1261,7 @@ export class ClassHelper {
         }
 
         if (nodeHasDecorator(property)) {
+            // console.log('property', property);
             const propertyDecorators = getNodeDecorators(property);
             result.decorators = this.formatDecorators(propertyDecorators);
         }
@@ -1372,8 +1406,12 @@ export class ClassHelper {
         }
 
         if (nodeHasDecorator(method)) {
+            console.log('method' /* , method */);
             const methodDecorators = getNodeDecorators(method);
+            // console.log('methodDecorators', methodDecorators);
+            // console.log('methodDecorators count', methodDecorators.length);
             result.decorators = this.formatDecorators(methodDecorators);
+            // console.log('result.decorators', result.decorators);
         }
 
         if (method.modifiers) {

@@ -21,6 +21,8 @@ export class ExtendsMerger {
     }
 
     public merge(deps) {
+        console.log('Merging extends');
+        console.dir(deps.classes);
         this.components = deps.components;
         this.classes = deps.classes;
         this.injectables = deps.injectables;
@@ -129,6 +131,7 @@ export class ExtendsMerger {
 
         const mergeExtendedClasses = el => {
             let ext;
+            console.log('mergeExtendedClasses', el.extends[0]);
             if (typeof el.extends !== 'undefined') {
                 ext = this.findInDependencies(el.extends[0]);
                 if (ext) {

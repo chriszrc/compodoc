@@ -14,6 +14,7 @@ export class ExportEngine {
     }
 
     public export(outputFolder, data) {
+        // console.log('Exporting data to', data);
         switch (Configuration.mainData.exportFormat) {
             case 'json':
                 return ExportJsonEngine.export(outputFolder, data);
