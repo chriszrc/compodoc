@@ -121,6 +121,8 @@ export class AngularDependencies extends FrameworkDependencies {
             return deps;
         });
 
+        // console.log('helpme1', deps.classes);
+
         // End of file scanning
         // Try merging inside the same file declarated variables & modules with imports | exports | declarations | providers
 
@@ -206,6 +208,8 @@ export class AngularDependencies extends FrameworkDependencies {
             });
         }
 
+        // console.log('helpme2', deps.classes);
+
         /**
          * If one thing extends another, merge them, only for internal sources
          * - classes
@@ -235,6 +239,7 @@ export class AngularDependencies extends FrameworkDependencies {
 
     private processClass(node, file, srcFile, outputSymbols, fileBody, astFile) {
         const name = this.getSymboleName(node);
+        // console.log('processClass', name);
         const IO = this.getClassIO(file, srcFile, node, fileBody, astFile);
         const sourceCode = srcFile.getText();
         const hash = crypto.createHash('sha512').update(sourceCode).digest('hex');
@@ -280,6 +285,7 @@ export class AngularDependencies extends FrameworkDependencies {
             deps.indexSignatures = IO.indexSignatures;
         }
         if (IO.extends) {
+            // console.log('testmeClass extends', IO.extends);
             deps.extends = IO.extends;
         }
         if (IO.jsdoctags && IO.jsdoctags.length > 0) {
@@ -442,6 +448,7 @@ export class AngularDependencies extends FrameworkDependencies {
                 return;
             }
             const parseNode = (file, srcFile, node, fileBody, astFile) => {
+                // console.log('parseNode astfile', astFile);
                 const sourceCode = srcFile.getText();
                 const hash = crypto.createHash('sha512').update(sourceCode).digest('hex');
 
@@ -545,6 +552,7 @@ export class AngularDependencies extends FrameworkDependencies {
                                 injectableDeps.accessors = IO.accessors;
                             }
                             if (IO.extends) {
+                                // console.log('testmeClass Injectable extends', IO.extends);
                                 injectableDeps.extends = IO.extends;
                             }
                             if (Configuration.mainData.disableLifeCycleHooks) {
@@ -620,7 +628,17 @@ export class AngularDependencies extends FrameworkDependencies {
                                 !hasMultipleDecoratorsWithInternalOne
                             ) {
                                 classWithCustomDecorator = true;
-                                this.processClass(node, file, srcFile, outputSymbols, fileBody);
+                                console.log('custom decorator for class', file);
+                                this.processClass(
+                                    node,
+                                    file,
+                                    srcFile,
+                                    outputSymbols,
+                                    fileBody,
+                                    //TODO wth is the astFile not passed here?!?@#$%@!#$
+                                    // it means that extends are not resolved for classes with custom decorators
+                                    astFile
+                                );
                             }
                         }
                         this.cache.set(name, deps);
@@ -651,6 +669,7 @@ export class AngularDependencies extends FrameworkDependencies {
                     nodeDecorators.filter(filterByDecorators).forEach(visitDecorator);
                 } else if (node.symbol) {
                     if (node.symbol.flags === ts.SymbolFlags.Class) {
+                        // console.log('helpme3', file);
                         this.processClass(node, file, srcFile, outputSymbols, fileBody, astFile);
                     } else if (node.symbol.flags === ts.SymbolFlags.Interface) {
                         const name = this.getSymboleName(node);
@@ -681,6 +700,7 @@ export class AngularDependencies extends FrameworkDependencies {
                             interfaceDeps.methods = IO.methods;
                         }
                         if (IO.extends) {
+                            console.log('testmeClass Interface extends', IO.extends);
                             interfaceDeps.extends = IO.extends;
                         }
                         if (typeof IO.ignore === 'undefined') {
@@ -794,6 +814,7 @@ export class AngularDependencies extends FrameworkDependencies {
                         }
                     }
                 } else {
+                    // console.log('helpme4', file);
                     const IO = this.getRouteIO(file, srcFile, node);
                     if (IO.routes) {
                         let newRoutes;
@@ -814,6 +835,7 @@ export class AngularDependencies extends FrameworkDependencies {
                         outputSymbols.routes = [...outputSymbols.routes, ...newRoutes];
                     }
                     if (ts.isClassDeclaration(node)) {
+                        // console.log('helpme5', file);
                         this.processClass(node, file, srcFile, outputSymbols, fileBody);
                     }
                     if (ts.isExpressionStatement(node) || ts.isIfStatement(node)) {
