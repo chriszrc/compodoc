@@ -47,6 +47,7 @@ export class DirectiveDepFactory {
             directiveDeps.jsdoctags = IO.jsdoctags[0].tags;
         }
         if (IO.extends) {
+            console.log('testmeClass Class directive extends', IO.extends);
             directiveDeps.extends = IO.extends;
         }
         if (IO.implements && IO.implements.length > 0) {

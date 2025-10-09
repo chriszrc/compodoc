@@ -33,6 +33,7 @@ export class ControllerDepFactory {
             }
         }
         if (IO.extends) {
+            console.log('testmeClass Controller dep extends', IO.extends);
             infos.extends = IO.extends;
         }
         return infos;

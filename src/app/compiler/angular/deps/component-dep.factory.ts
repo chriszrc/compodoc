@@ -80,6 +80,7 @@ export class ComponentDepFactory {
             componentDep.constructorObj = IO.constructor;
         }
         if (IO.extends) {
+            console.log('testmeClass Class component extends', IO.extends);
             componentDep.extends = IO.extends;
         }
         if (IO.implements && IO.implements.length > 0) {

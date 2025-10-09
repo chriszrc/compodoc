@@ -491,6 +491,10 @@ export class ClassHelper {
         sourceFile?: ts.SourceFile,
         astFile?: ts.SourceFile
     ): any {
+        console.log('visitClassDeclaration1', fileName);
+        console.log('visitClassDeclaration2', classDeclaration);
+        // console.log('visitClassDeclaration3', sourceFile);
+        console.log('visitClassDeclaration4', astFile);
         let symbol = this.typeChecker.getSymbolAtLocation(classDeclaration.name);
         let rawdescription = '';
         let deprecated = false;
@@ -532,6 +536,7 @@ export class ClassHelper {
             }
         }
         let className = classDeclaration.name.text;
+        console.log('visitClassDeclaration', className);
         let members;
         let implementsElements = [];
         let extendsElements = [];
@@ -552,9 +557,11 @@ export class ClassHelper {
 
         if (typeof ts.getClassExtendsHeritageElement !== 'undefined') {
             console.log('ts.getClassExtendsHeritageElement');
+            console.log('astFile', astFile);
             if (astFile) {
                 let interfaceOrClassNode = astFile.getInterface(className);
                 if (!interfaceOrClassNode) {
+                    console.log('astFile.getClass', astFile.getClass(className));
                     interfaceOrClassNode = astFile.getClass(className);
                 }
                 if (interfaceOrClassNode) {
